@@ -36,12 +36,10 @@ const RomanizeKorean = async (lyricMetadata: any, primaryLanguage: string) => {
   while (!aromanize) {
     await new Promise((r) => setTimeout(r, 50));
   }
-  if (primaryLanguage === "kor" || KoreanTextTest.test(lyricMetadata.Text)) {
-    lyricMetadata.RomanizedText = aromanize.default(
-      lyricMetadata.Text,
-      "RevisedRomanizationTransliteration"
-    );
-  }
+  lyricMetadata.RomanizedText = aromanize.default(
+    lyricMetadata.Text,
+    "RevisedRomanizationTransliteration"
+  );
 };
 
 const RomanizeChinese = async (lyricMetadata: any, primaryLanguage: string) => {
@@ -49,27 +47,23 @@ const RomanizeChinese = async (lyricMetadata: any, primaryLanguage: string) => {
   while (!pinyin) {
     await new Promise((r) => setTimeout(r, 50));
   }
-  if (primaryLanguage === "cmn" || ChineseTextText.test(lyricMetadata.Text)) {
-    const result = pinyin.pinyin(lyricMetadata.Text, {
-      segment: false,
-      group: true,
-    });
+  const result = pinyin.pinyin(lyricMetadata.Text, {
+    segment: false,
+    group: true,
+  });
 
-    lyricMetadata.RomanizedText = result.join("-");
-  }
+  lyricMetadata.RomanizedText = result.join("-");
 };
 
 const RomanizeJapanese = async (lyricMetadata: any, primaryLanguage: string) => {
-  if (primaryLanguage === "jpn" || JapaneseTextText.test(lyricMetadata.Text)) {
-    await RomajiPromise;
+  await RomajiPromise;
 
-    const result = await RomajiConverter.convert(lyricMetadata.Text, {
-      to: "romaji",
-      mode: "spaced",
-    });
+  const result = await RomajiConverter.convert(lyricMetadata.Text, {
+    to: "romaji",
+    mode: "spaced",
+  });
 
-    lyricMetadata.RomanizedText = result;
-  }
+  lyricMetadata.RomanizedText = result;
 };
 
 const RomanizeCyrillic = async (lyricMetadata: any, primaryLanguage: string, iso2Lang: string) => {
@@ -109,14 +103,14 @@ const RomanizeGreek = async (lyricMetadata: any, primaryLanguage: string) => {
 const Romanize = async (lyricMetadata: any, rootInformation: any): Promise<string | undefined> => {
   const primaryLanguage = rootInformation.Language;
   const iso2Language = rootInformation.LanguageISO2;
-  if (primaryLanguage === "jpn" || JapaneseTextText.test(lyricMetadata.Text)) {
-    await RomanizeJapanese(lyricMetadata, primaryLanguage);
-    rootInformation.IncludesRomanization = true;
-    return "Japanese";
-  } else if (primaryLanguage === "cmn" || ChineseTextText.test(lyricMetadata.Text)) {
+  if (primaryLanguage === "cmn" || ChineseTextText.test(lyricMetadata.Text)) {
     await RomanizeChinese(lyricMetadata, primaryLanguage);
     rootInformation.IncludesRomanization = true;
     return "Chinese";
+  } else if (primaryLanguage === "jpn" || JapaneseTextText.test(lyricMetadata.Text)) {
+    await RomanizeJapanese(lyricMetadata, primaryLanguage);
+    rootInformation.IncludesRomanization = true;
+    return "Japanese";
   } else if (primaryLanguage === "kor" || KoreanTextTest.test(lyricMetadata.Text)) {
     await RomanizeKorean(lyricMetadata, primaryLanguage);
     rootInformation.IncludesRomanization = true;
